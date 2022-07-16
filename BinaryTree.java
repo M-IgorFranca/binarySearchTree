@@ -7,23 +7,23 @@ public class BinaryTree {
             root = newNode;
         }
         else{
-            Node focusNode = root;
+            Node currentNode = root;
             Node parent;
 
             while(true){
-                parent = focusNode;
+                parent = currentNode;
 
-                if(key < focusNode.key) {
-                    focusNode = focusNode.leftChild;
-                    if (focusNode == null) {
+                if(key < currentNode.key) {
+                    currentNode = currentNode.leftChild;
+                    if (currentNode == null) {
                         parent.leftChild = newNode;
                         return;
                     }
                 }
                 else{
-                    focusNode = focusNode.rightChild;
+                    currentNode = currentNode.rightChild;
 
-                    if(focusNode == null){
+                    if(currentNode == null){
                         parent.rightChild = newNode;
                         return;
                     }
@@ -31,45 +31,132 @@ public class BinaryTree {
             }
         }
     }
-    public void inOrderTraverseTree(Node focusNode){
-        if(focusNode != null){
-            inOrderTraverseTree(focusNode.leftChild);
-            System.out.println(focusNode);
-            inOrderTraverseTree(focusNode.rightChild);
+    public void inOrderTraverseTree(Node currentNode){
+        if(currentNode != null){
+            inOrderTraverseTree(currentNode.leftChild);
+            System.out.println(currentNode);
+            inOrderTraverseTree(currentNode.rightChild);
         }
     }
 
-    public void preorderTraverseTree(Node focusNode){
-        if(focusNode != null){
-            System.out.println(focusNode);
-            preorderTraverseTree(focusNode.leftChild);
-            preorderTraverseTree(focusNode.rightChild);
+    public void preorderTraverseTree(Node currentNode){
+        if(currentNode != null){
+            System.out.println(currentNode);
+            preorderTraverseTree(currentNode.leftChild);
+            preorderTraverseTree(currentNode.rightChild);
         }
     }
 
-    public void postOrderTraverseTree(Node focusNode){
-        if(focusNode != null){
-            postOrderTraverseTree(focusNode.leftChild);
-            postOrderTraverseTree(focusNode.rightChild);
-            System.out.println(focusNode);
+    public void postOrderTraverseTree(Node currentNode){
+        if(currentNode != null){
+            postOrderTraverseTree(currentNode.leftChild);
+            postOrderTraverseTree(currentNode.rightChild);
+            System.out.println(currentNode);
         }
     }
 
     public Node findNode(int key){
-        Node focusNode = root;
+        Node currentNode = root;
 
-        while(focusNode.key != key){
-            if(key < focusNode.key){
-                focusNode = focusNode.leftChild;
+        while(currentNode.key != key){
+            if(key < currentNode.key){
+                currentNode = currentNode.leftChild;
             }
             else {
-                focusNode = focusNode.rightChild;
+                currentNode = currentNode.rightChild;
             }
-            if(focusNode == null){
+            if(currentNode == null){
                 return null;
             }
         }
-        return focusNode;
+        return currentNode;
+    }
+
+    public boolean remove(int key){
+        Node currentNode = root;
+        Node parent = root;
+
+        boolean isItALeftChild = true;
+
+        while(currentNode.key != key){
+            parent = currentNode;
+
+            if(key < currentNode.key){
+                isItALeftChild = true;
+                currentNode = currentNode.leftChild;
+            }
+            else {
+                isItALeftChild = false;
+                currentNode = currentNode.rightChild;
+            }
+            if(currentNode == null){
+                return false;
+            }
+        }
+        if(currentNode.leftChild == null && currentNode.rightChild == null){
+            if(currentNode == root){
+                root = null;
+            }
+            else if(isItALeftChild){
+                parent.leftChild = null;
+            }
+            else{
+                parent.rightChild = null;
+            }
+        } else if (currentNode.rightChild == null) {
+            if(currentNode == root){
+                root = currentNode.leftChild;
+            }
+            else if(isItALeftChild){
+                parent.leftChild = currentNode.leftChild;
+            }
+            else {
+                parent.rightChild = currentNode.leftChild;
+            }
+        }
+        else if(currentNode.leftChild == null){
+            if(currentNode == root){
+                root = currentNode.rightChild;
+            }
+            else if(isItALeftChild){
+                parent.leftChild = currentNode.rightChild;
+            }
+            else{
+                parent.rightChild = currentNode.rightChild;
+            }
+        }
+        else {
+            Node replacement = getReplacementNode(currentNode);
+
+            if(currentNode == root){
+                root = replacement;
+            }
+            else if(isItALeftChild){
+                parent.leftChild = replacement;
+            }
+            else {
+                parent.rightChild = replacement;
+            }
+            replacement.leftChild = currentNode.leftChild;
+        }
+        return true;
+    }
+
+    public Node getReplacementNode(Node replacedNode){
+        Node replacementParent = replacedNode;
+        Node replacement = replacedNode;
+        Node currentNode =  replacedNode.rightChild;
+
+        while(currentNode != null){
+            replacementParent = replacement;
+            replacement = currentNode;
+            currentNode = currentNode.leftChild;
+        }
+        if(replacement != replacedNode.rightChild){
+            replacementParent.leftChild = replacement.rightChild;
+            replacement.rightChild = replacedNode.rightChild;
+        }
+        return replacement;
     }
 
     public static void main(String[] args){
@@ -81,10 +168,11 @@ public class BinaryTree {
         theTree.addNode(30, "Secretary");
         theTree.addNode(75, "Sales Manager");
         theTree.addNode(85, "Salesman 1");
+        System.out.println("Remove 25");
+        theTree.remove(25);
+        theTree.remove(25);
 
         theTree.postOrderTraverseTree(theTree.root);
-        System.out.println("Search for 30 ");
-        System.out.println(theTree.findNode(30));
     }
 }
 
