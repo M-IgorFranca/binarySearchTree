@@ -1,7 +1,8 @@
 public class BinaryTree {
+    int repeatedNodes = 0;
     Node root;
-    public void addNode(int key, String name){
-        Node newNode = new Node(key, name);
+    public void addNode(int key){
+        Node newNode = new Node(key);
 
         if(root == null){
             root = newNode;
@@ -20,13 +21,16 @@ public class BinaryTree {
                         return;
                     }
                 }
-                else{
+                else if (key > currentNode.key){
                     currentNode = currentNode.rightChild;
-
                     if(currentNode == null){
                         parent.rightChild = newNode;
                         return;
                     }
+                }
+                else{
+                    repeatedNodes++;
+                    return;
                 }
             }
         }
@@ -159,36 +163,27 @@ public class BinaryTree {
         return replacement;
     }
 
+    public void findRepeatedNodes(){
+        System.out.print("The numbers os the repeated numbers is: ");
+        System.out.println(repeatedNodes);
+    }
+
     public static void main(String[] args){
         BinaryTree theTree = new BinaryTree();
-
-        theTree.addNode(50, "Boss");
-        theTree.addNode(25, "Vice Pres");
-        theTree.addNode(15, "Office Manager");
-        theTree.addNode(30, "Secretary");
-        theTree.addNode(75, "Sales Manager");
-        theTree.addNode(85, "Salesman 1");
-        System.out.println("Remove 25");
-        theTree.remove(25);
-        theTree.remove(25);
-
-        theTree.postOrderTraverseTree(theTree.root);
+        int[] listNumbers = {1,2,3,4,5,6,7,8,9,10,1,2,3};
+        for (int i = 0; i < listNumbers.length; i++) {
+            theTree.addNode(listNumbers[i]);
+        }
+        theTree.findRepeatedNodes();
     }
 }
 
 class Node{
     int key;
-    String name;
-
     Node leftChild;
     Node rightChild;
 
-    Node(int key, String name){
+    Node(int key){
         this.key = key;
-        this.name = name;
-    }
-
-    public String toString(){
-        return name + " has a key " + key;
     }
 }
